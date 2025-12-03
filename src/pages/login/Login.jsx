@@ -1,57 +1,45 @@
+// pages/login/Login.jsx
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
+  const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // TODO: Add authentication logic here
+    navigate("/dashboard");
+  };
+
   return (
-    <div className="d-flex align-items-center justify-content-center min-vh-100 bg-primary bg-gradient">
-      <div
-        className="card bg-transparent border-0 shadow-lg p-4"
-        style={{
-          maxWidth: "400px",
-          width: "100%",
-          backdropFilter: "blur(10px)",
-          borderRadius: "12px",
-          border: "1px solid rgba(255,255,255,0.3)",
-        }}
-      >
-        <h2 className="text-center fw-bold text-white">Welcome Back</h2>
-        <p className="text-center text-light mb-4">
-          Sign in to continue to your account
+    <div className="d-flex align-items-center justify-content-center min-vh-100 bg-light">
+      <div className="card shadow-sm p-4" style={{ maxWidth: "400px", width: "100%" }}>
+        <h3 className="text-center fw-bold text-primary mb-3">Sign In</h3>
+        <p className="text-center text-muted mb-4">
+          Enter your credentials to access your account
         </p>
 
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="form-label text-white">Email</label>
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="form-control bg-transparent text-white border-light"
-              required
-            />
+            <label className="form-label">Email</label>
+            <input type="email" className="form-control" placeholder="Enter your email" required />
           </div>
 
           <div className="mb-3">
-            <label className="form-label text-white">Password</label>
-            <input
-              type="password"
-              placeholder="Enter your password"
-              className="form-control bg-transparent text-white border-light"
-              required
-            />
+            <label className="form-label">Password</label>
+            <input type="password" className="form-control" placeholder="Enter your password" required />
           </div>
 
-          <button
-            type="submit"
-            className="btn btn-light w-100 fw-semibold shadow-sm"
-          >
+          <button type="submit" className="btn btn-primary w-100 fw-semibold">
             Login
           </button>
         </form>
 
-        <div className="text-center mt-4 small text-light">
-          <p className="mt-2">
+        <div className="text-center mt-3 small">
+          <p className="mb-0">
             Don’t have an account?{" "}
-            <a href="#" className="text-white fw-semibold text-decoration-none">
+            <a href="#" className="text-primary fw-semibold text-decoration-none">
               Contact your administrator
             </a>
           </p>

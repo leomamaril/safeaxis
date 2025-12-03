@@ -6,8 +6,6 @@ import Card from "../component/Cards"; // adjust path if needed
 import AnalyticsPanel from "../layout/AnalyticsPanel"; // adjust path if needed
 import ActionsPanel from "../layout/ActionsPanel"; // adjust path if needed
 import HeadsUpPanel from "../layout/HeadsUpPanel";
-import CreateAccountPanel from "../layout/AccountManagement"; // adjust path if needed
-
 import { Line } from "react-chartjs-2";
 import SchedulePanel from "../layout/SchedulePanel"; // adjust path if needed
 
