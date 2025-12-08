@@ -147,7 +147,7 @@ export default function HeadsUpPanel() {
           {selectedItem.title}
         </h3>
         <p className="text-sm text-gray-600 mb-1">
-          Author: <span className="font-medium">{selectedItem.author}</span>
+          a: <span className="font-medium">{selectedItem.author}</span>
         </p>
         <p className="text-sm text-gray-600 mb-3">
           Date: <span className="font-medium">{selectedItem.date}</span>

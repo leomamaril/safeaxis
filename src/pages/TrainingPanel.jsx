@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Sidebar from "../component/Sidebar/Sidebar";
 import Header from "../component/Header"; // adjust path if needed
+import training from "../assets/training.png";
 import {
   DocumentIcon,
   VideoCameraIcon,
@@ -16,7 +17,7 @@ export default function TrainingGrounds() {
       description: "Learn the essential safety protocols for the workplace.",
       uploadedBy: "HR Department",
       date: "Nov 25, 2025",
-      image: "https://via.placeholder.com/400x200?text=Safety+Training",
+      image: training,
     },
     {
       title: "Fire Drill Training Video",
@@ -25,7 +26,7 @@ export default function TrainingGrounds() {
       description: "Step-by-step fire drill procedures for employees.",
       uploadedBy: "Safety Officer",
       date: "Nov 28, 2025",
-      image: "https://via.placeholder.com/400x200?text=Fire+Drill",
+      image: training,
     },
   ]);
 

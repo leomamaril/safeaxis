@@ -1,7 +1,7 @@
 // src/layout/InspectionPanel.jsx
 import { useState } from "react";
 import Sidebar from "../component/Sidebar/Sidebar";
-import Header from "../component/Header"; // adjust path if Header is in pages
+import Header from "../component/Header";
 import {
   ClipboardDocumentCheckIcon,
   DocumentTextIcon,
@@ -29,6 +29,7 @@ export default function InspectionPanel() {
       completed: "5 Sep 2023",
       status: "Continue",
       type: "continue",
+      location: "Warehouse A",
     },
     {
       id: 2,
@@ -39,6 +40,7 @@ export default function InspectionPanel() {
       completed: "5 Sep 2023",
       status: "Continue",
       type: "continue",
+      location: "Warehouse A",
     },
   ]);
 
@@ -53,10 +55,21 @@ export default function InspectionPanel() {
       completed: "5 Sep 2023",
       status: "View Report",
       type: "report",
+      location: "Warehouse b",
     },
   ]);
 
   const inspections = viewArchive ? archivedInspections : activeInspections;
+
+  // Template modal state
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [templateSearch, setTemplateSearch] = useState("");
+  const [templates] = useState([
+    { id: 1, name: "Warehouse Safety Checklist" },
+    { id: 2, name: "Fire Drill Inspection" },
+    { id: 3, name: "Equipment Maintenance Report" },
+    { id: 4, name: "Food Hygiene Audit" },
+  ]);
 
   const toggleSelectAll = () => {
     if (selected.length === inspections.length) {
@@ -74,9 +87,13 @@ export default function InspectionPanel() {
 
   const deleteSelected = () => {
     if (viewArchive) {
-      setArchivedInspections(archivedInspections.filter((i) => !selected.includes(i.id)));
+      setArchivedInspections(
+        archivedInspections.filter((i) => !selected.includes(i.id))
+      );
     } else {
-      setActiveInspections(activeInspections.filter((i) => !selected.includes(i.id)));
+      setActiveInspections(
+        activeInspections.filter((i) => !selected.includes(i.id))
+      );
     }
     setSelected([]);
   };
@@ -84,7 +101,9 @@ export default function InspectionPanel() {
   const archiveSelected = () => {
     const toArchive = activeInspections.filter((i) => selected.includes(i.id));
     setArchivedInspections([...archivedInspections, ...toArchive]);
-    setActiveInspections(activeInspections.filter((i) => !selected.includes(i.id)));
+    setActiveInspections(
+      activeInspections.filter((i) => !selected.includes(i.id))
+    );
     setSelected([]);
   };
 
@@ -102,6 +121,24 @@ export default function InspectionPanel() {
       setActiveInspections([...activeInspections, item]);
       setArchivedInspections(archivedInspections.filter((i) => i.id !== id));
     }
+  };
+
+  // Handle template selection
+  const handleTemplateSelect = (template) => {
+    // Example: add a new inspection using the selected template
+    const newInspection = {
+      id: Date.now(),
+      name: `${template.name} / New Inspection`,
+      doc: `DOC-${Date.now()}`,
+      score: "0%",
+      conducted: new Date().toLocaleDateString(),
+      completed: "-",
+      status: "Start",
+      type: "continue",
+      location: "Unassigned",
+    };
+    setActiveInspections([...activeInspections, newInspection]);
+    setShowTemplateModal(false);
   };
 
   return (
@@ -142,7 +179,10 @@ export default function InspectionPanel() {
                 </button>
 
                 {!viewArchive && (
-                  <button className="flex items-center gap-2 px-5 py-2.5 bg-teal-500 text-white rounded-md shadow hover:bg-teal-600 transition">
+                  <button
+                    onClick={() => setShowTemplateModal(true)}
+                    className="flex items-center gap-2 px-5 py-2.5 bg-teal-500 text-white rounded-md shadow hover:bg-teal-600 transition"
+                  >
                     <ClipboardDocumentCheckIcon className="h-6 w-6 text-white" />
                     <span className="font-medium">Start Inspection</span>
                   </button>
@@ -183,89 +223,101 @@ export default function InspectionPanel() {
               </div>
             </div>
 
-            {/* Table */}
-            <div className="bg-white overflow-x-auto">
-              <table className="min-w-full text-sm text-gray-700 border rounded-lg overflow-hidden">
-                <thead className="bg-teal-50 text-gray-700">
-                  <tr>
-                    <th className="px-6 py-3 text-left font-semibold">
-                      <input
-                        type="checkbox"
-                        checked={selected.length === inspections.length && inspections.length > 0}
-                        onChange={toggleSelectAll}
-                        className="h-4 w-4 text-teal-500 border-gray-300 rounded"
-                      />
-                    </th>
-                    <th className="px-6 py-3 text-left font-semibold">Inspection</th>
-                    <th className="px-6 py-3 text-left font-semibold">Doc Number</th>
-                    <th className="px-6 py-3 text-left font-semibold">Score</th>
-                    <th className="px-6 py-3 text-left font-semibold">Conducted</th>
-                    <th className="px-6 py-3 text-left font-semibold">Completed</th>
-                    <th className="px-6 py-3 text-left font-semibold">Actions</th>
-                    <th className="px-6 py-3 text-left font-semibold"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {inspections.map((item, idx) => (
-                    <tr
-                      key={item.id}
-                      className={`border-b hover:bg-gray-50 transition ${
-                        idx % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      }`}
-                    >
-                      <td className="px-6 py-4">
-                        <input
-                          type="checkbox"
-                          checked={selected.includes(item.id)}
-                          onChange={() => toggleSelect(item.id)}
-                          className="h-4 w-4 text-teal-500 border-gray-300 rounded"
-                        />
-                      </td>
-                      <td className="px-6 py-4">{item.name}</td>
-                      <td className="px-6 py-4">{item.doc}</td>
-                      <td className="px-6 py-4">{item.score}</td>
-                      <td className="px-6 py-4">{item.conducted}</td>
-                      <td className="px-6 py-4">{item.completed}</td>
-                                            <td className="px-6 py-4">
-                        {!viewArchive ? (
-                          item.type === "continue" ? (
-                            <button className="flex items-center gap-2 px-4 py-2 bg-teal-500 text-white rounded-md shadow hover:bg-teal-600 transition">
-                              <ClipboardDocumentCheckIcon className="h-5 w-5 text-white" />
-                              <span>{item.status}</span>
-                            </button>
-                          ) : (
-                            <button className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 transition">
-                              <DocumentTextIcon className="h-5 w-5 text-white" />
-                              <span>{item.status}</span>
-                            </button>
-                          )
-                        ) : (
-                          <button
-                            onClick={() => handleRestore(item.id)}
-                            className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-md shadow hover:bg-green-600 transition"
-                          >
-                            <ArchiveBoxIcon className="h-5 w-5 text-white" />
-                            <span>Restore</span>
-                          </button>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 text-right relative">
-                        {!viewArchive && (
-                          <button
-                            onClick={() => setOpenMenu(openMenu === idx ? null : idx)}
-                            className="p-2 rounded-full hover:bg-gray-200 transition"
-                          >
-                            <EllipsisVerticalIcon className="h-5 w-5 text-gray-600" />
-                          </button>
-                        )}
+            {/* Card Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {inspections.map((item, idx) => (
+                <div
+      key={item.id}
+      onClick={() => {
+        console.log("Clicked card:", item);
+        // setShowDetails(item); // if you want to open a modal
+      }}
+      className="cursor-pointer bg-white rounded-xl shadow border border-gray-200 p-6 flex flex-col gap-4 hover:shadow-lg hover:border-teal-400 transition"
+    >
+                  {/* Header */}
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-800">
+                        {item.name}
+                      </h3>
+                      <p className="text-sm text-gray-500">{item.doc}</p>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={selected.includes(item.id)}
+                      onChange={() => toggleSelect(item.id)}
+                      className="h-4 w-4 text-teal-500 border-gray-300 rounded"
+                    />
+                  </div>
 
-                        {/* Dropdown menu */}
-                        {openMenu === idx && !viewArchive && (
+                  {/* Details */}
+                  <div className="space-y-1 text-sm text-gray-600">
+                    <p>
+                      <span className="font-medium">Score:</span> {item.score}
+                    </p>
+                                        <p>
+                      <span className="font-medium">Conducted:</span>{" "}
+                      {item.conducted}
+                    </p>
+                    <p>
+                      <span className="font-medium">Completed:</span>{" "}
+                      {item.completed}
+                    </p>
+                    <p>
+                      <span className="font-medium">Location:</span>{" "}
+                      {item.location}
+                    </p>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex justify-between items-center mt-2">
+                    {!viewArchive ? (
+                      item.type === "continue" ? (
+                        <button className="flex items-center gap-2 px-4 py-2 bg-teal-500 text-white rounded-md shadow hover:bg-teal-600 transition">
+                          <ClipboardDocumentCheckIcon className="h-5 w-5 text-white" />
+                          <span>{item.status}</span>
+                        </button>
+                      ) : (
+                        <button className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 transition">
+                          <DocumentTextIcon className="h-5 w-5 text-white" />
+                          <span>{item.status}</span>
+                        </button>
+                      )
+                    ) : (
+                      <button
+                        onClick={() => handleRestore(item.id)}
+                        className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-md shadow hover:bg-green-600 transition"
+                      >
+                        <ArchiveBoxIcon className="h-5 w-5 text-white" />
+                        <span>Restore</span>
+                      </button>
+                    )}
+
+                    {!viewArchive && (
+                      <div className="relative">
+                        <button
+                          onClick={() =>
+                            setOpenMenu(openMenu === idx ? null : idx)
+                          }
+                          className="p-2 rounded-full hover:bg-gray-200 transition"
+                        >
+                          <EllipsisVerticalIcon className="h-5 w-5 text-gray-600" />
+                        </button>
+                        {openMenu === idx && (
                           <div className="absolute right-0 mt-2 w-40 bg-white border rounded-md shadow-lg z-10">
                             <button className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">
                               Edit
                             </button>
-                            <button className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">
+                            <button
+                              onClick={() => {
+                                setActiveInspections(
+                                  activeInspections.filter(
+                                    (i) => i.id !== item.id
+                                  )
+                                );
+                              }}
+                              className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                            >
                               Delete
                             </button>
                             <button className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">
@@ -279,15 +331,119 @@ export default function InspectionPanel() {
                             </button>
                           </div>
                         )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
+
+            {/* Select All Checkbox */}
+            {inspections.length > 0 && (
+              <div className="flex items-center gap-2 mt-6">
+                <input
+                  type="checkbox"
+                  checked={
+                    selected.length === inspections.length &&
+                    inspections.length > 0
+                  }
+                  onChange={toggleSelectAll}
+                  className="h-4 w-4 text-teal-500 border-gray-300 rounded"
+                />
+                <span className="text-sm text-gray-600">Select All</span>
+              </div>
+            )}
           </section>
         </div>
       </div>
+
+      {/* Template Modal */}
+      {showTemplateModal && (
+  <div
+    className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+    onClick={() => {
+      setShowTemplateModal(false);
+      setTemplateSearch("");
+    }}
+  >
+    <div
+      className="bg-white rounded-2xl shadow-2xl w-[900px] p-6"
+      onClick={(e) => e.stopPropagation()}
+    >
+      {/* Header */}
+      <h2 className="text-xl font-bold text-gray-800 mb-4">Select Template</h2>
+
+      {/* Search Input */}
+      <input
+        type="text"
+        value={templateSearch}
+        onChange={(e) => setTemplateSearch(e.target.value)}
+        className="w-full border rounded-md px-3 py-2 mb-4 focus:ring-2 focus:ring-teal-500 focus:outline-none"
+        placeholder="Search templates..."
+      />
+
+      {/* Results Table */}
+      <div className="max-h-[300px] overflow-y-auto border border-gray-200 rounded-md">
+        <table className="w-full">
+          <thead className="bg-gray-100 sticky top-0">
+            <tr>
+              <th className="text-left px-4 py-2 text-lg font-semibold text-gray-700">
+                Template
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {templates.filter((t) =>
+              t.name.toLowerCase().includes(templateSearch.toLowerCase())
+            ).length > 0 ? (
+              templates
+                .filter((t) =>
+                  t.name.toLowerCase().includes(templateSearch.toLowerCase())
+                )
+                .map((t) => (
+                  <tr
+                    key={t.id}
+                    className="cursor-pointer hover:bg-teal-50 transition"
+                    onClick={() => {
+                      handleTemplateSelect(t);
+                      setTemplateSearch("");
+                    }}
+                  >
+                    <td className="px-4 py-3 text-gray-800 font-medium">
+                      {t.name}
+                    </td>
+                  </tr>
+                ))
+            ) : (
+              <tr>
+                <td className="px-4 py-3 text-gray-500 text-lg">
+                  No results found
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Footer */}
+      <div className="flex justify-end mt-6">
+        <button
+          type="button"
+          onClick={() => {
+            setShowTemplateModal(false);
+            setTemplateSearch("");
+          }}
+          className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }
+
+                    

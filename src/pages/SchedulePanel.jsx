@@ -219,7 +219,7 @@ export default function SchedulePanel() {
                 {!viewArchive && (
                   <button className="flex items-center gap-2 px-5 py-2.5 bg-teal-500 text-white rounded-md shadow hover:bg-teal-600 transition">
                     <ClipboardDocumentCheckIcon className="h-6 w-6 text-white" />
-                    <span className="font-medium">Start Inspection</span>
+                    <span className="font-medium"> Create Schedule</span>
                   </button>
                 )}
 
@@ -295,112 +295,88 @@ export default function SchedulePanel() {
             </div>
 
             {/* Table */}
-            <div className="bg-white overflow-x-auto">
-              <table className="min-w-full text-sm text-gray-700 border rounded-lg overflow-hidden">
-                <thead className="bg-teal-50 text-gray-700">
-                  <tr>
-                    <th className="px-6 py-3 text-left font-semibold">
-                      <input
-                        type="checkbox"
-                        checked={
-                          selected.length === schedules.length &&
-                          schedules.length > 0
-                        }
-                        onChange={toggleSelectAll}
-                        className="h-4 w-4 text-teal-500 border-gray-300 rounded"
-                      />
-                    </th>
-                    <th className="px-6 py-3 text-left font-semibold">Schedule</th>
-                    <th className="px-6 py-3 text-left font-semibold">Doc Number</th>
-                    <th className="px-6 py-3 text-left font-semibold">Score</th>
-                    <th className="px-6 py-3 text-left font-semibold">Conducted</th>
-                    <th className="px-6 py-3 text-left font-semibold">Completed</th>
-                    <th className="px-6 py-3 text-left font-semibold">Actions</th>
-                    <th className="px-6 py-3 text-left font-semibold"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {schedules.map((item, idx) => (
-                    <tr
-                      key={item.id}
-                      className={`border-b hover:bg-gray-50 transition ${
-                        idx % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      }`}
-                    >
-                      <td className="px-6 py-4">
-                        <input
-                          type="checkbox"
-                          checked={selected.includes(item.id)}
-                          onChange={() => toggleSelect(item.id)}
-                          className="h-4 w-4 text-teal-500 border-gray-300 rounded"
-                        />
-                      </td>
-                      <td className="px-6 py-4">{item.name}</td>
-                      <td className="px-6 py-4">{item.doc}</td>
-                      <td className="px-6 py-4">{item.score}</td>
-                      <td className="px-6 py-4">{item.conducted}</td>
-                      <td className="px-6 py-4">{item.completed}</td>
-                      <td className="px-6 py-4">
-                        {!viewArchive ? (
-                          item.type === "continue" ? (
-                            <button className="flex items-center gap-2 px-4 py-2 bg-teal-500 text-white rounded-md shadow hover:bg-teal-600 transition">
-                              <ClipboardDocumentCheckIcon className="h-5 w-5 text-white" />
-                              <span>{item.status}</span>
-                            </button>
-                          ) : (
-                            <button className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 transition">
-                              <DocumentTextIcon className="h-5 w-5 text-white" />
-                              <span>{item.status}</span>
-                            </button>
-                          )
-                        ) : (
-                          <button
-                            onClick={() => handleRestore(item.id)}
-                            className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-md shadow hover:bg-green-600 transition"
-                          >
-                            <ArchiveBoxIcon className="h-5 w-5 text-white" />
-                            <span>Restore</span>
-                          </button>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 text-right relative">
-                        {!viewArchive && (
-                          <button
-                            onClick={() =>
-                              setOpenMenu(openMenu === idx ? null : idx)
-                            }
-                            className="p-2 rounded-full hover:bg-gray-200 transition"
-                          >
-                            <EllipsisVerticalIcon className="h-5 w-5 text-gray-600" />
-                          </button>
-                        )}
+            {/* Cards */}
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  {schedules.map((item, idx) => (
+    <div
+      key={item.id}
+      className="bg-white rounded-lg shadow-md p-6 flex flex-col gap-4 hover:shadow-lg transition relative"
+    >
+      {/* Checkbox */}
+      <div className="flex justify-between items-start">
+        <input
+          type="checkbox"
+          checked={selected.includes(item.id)}
+          onChange={() => toggleSelect(item.id)}
+          className="h-4 w-4 text-teal-500 border-gray-300 rounded"
+        />
 
-                        {/* Dropdown menu */}
-                        {openMenu === idx && !viewArchive && (
-                          <div className="absolute right-0 mt-2 w-40 bg-white border rounded-md shadow-lg z-10">
-                            <button className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">
-                              Edit
-                            </button>
-                            <button className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">
-                              Delete
-                            </button>
-                            <button className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">
-                              Details
-                            </button>
-                            <button
-                              onClick={() => handleArchive(item.id)}
-                              className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
-                            >
-                              Archive
-                            </button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+        {!viewArchive && (
+          <button
+            onClick={() => setOpenMenu(openMenu === idx ? null : idx)}
+            className="p-2 rounded-full hover:bg-gray-100 transition"
+          >
+            <EllipsisVerticalIcon className="h-5 w-5 text-gray-600" />
+          </button>
+        )}
+
+        {/* Dropdown menu */}
+        {openMenu === idx && !viewArchive && (
+          <div className="absolute right-4 top-12 w-40 bg-white border rounded-md shadow-lg z-10">
+            <button className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">
+              Edit
+            </button>
+            <button className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">
+              Delete
+            </button>
+            <button className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">
+              Details
+            </button>
+            <button
+              onClick={() => handleArchive(item.id)}
+              className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+            >
+              Archive
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Card Content */}
+      <h3 className="text-lg font-semibold text-gray-900">{item.name}</h3>
+      <p className="text-sm text-gray-500">Doc: {item.doc}</p>
+      <p className="text-sm text-gray-500">Score: {item.score}</p>
+      <p className="text-sm text-gray-500">Conducted: {item.conducted}</p>
+      <p className="text-sm text-gray-500">Completed: {item.completed}</p>
+
+      {/* Action Button */}
+      <div>
+        {!viewArchive ? (
+          item.type === "continue" ? (
+            <button className="flex items-center gap-2 px-4 py-2 bg-teal-500 text-white rounded-md shadow hover:bg-teal-600 transition">
+              <ClipboardDocumentCheckIcon className="h-5 w-5 text-white" />
+              <span>{item.status}</span>
+            </button>
+          ) : (
+            <button className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 transition">
+              <DocumentTextIcon className="h-5 w-5 text-white" />
+              <span>{item.status}</span>
+            </button>
+          )
+        ) : (
+          <button
+            onClick={() => handleRestore(item.id)}
+            className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-md shadow hover:bg-green-600 transition"
+          >
+            <ArchiveBoxIcon className="h-5 w-5 text-white" />
+            <span>Restore</span>
+          </button>
+        )}
+      </div>
+    </div>
+  ))}
+</div>
+
           </section>
         </div>
       </div>

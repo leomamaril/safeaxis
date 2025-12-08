@@ -1,7 +1,7 @@
 // src/layout/TaskActionsPanel.jsx
 import { useState } from "react";
 import Sidebar from "../component/Sidebar/Sidebar";
-import Header from "../component/Header"; // adjust path if needed
+import Header from "../component/Header";
 import {
   UserIcon,
   ExclamationTriangleIcon,
@@ -166,139 +166,146 @@ export default function TaskActionsPanel() {
               </button>
             </div>
 
-            {/* Table */}
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-sm text-gray-700 border rounded-lg overflow-hidden">
-                <thead className="bg-blue-50 text-gray-700">
-                  <tr>
-                    <th className="px-6 py-3 text-left font-semibold">
-                      <input
-                        type="checkbox"
-                        checked={
-                          selected.length === tasks.length && tasks.length > 0
-                        }
-                        onChange={toggleSelectAll}
-                        className="h-4 w-4 text-blue-500 border-gray-300 rounded"
-                      />
-                    </th>
-                    <th className="px-6 py-3 text-left font-semibold">Task</th>
-                    <th className="px-6 py-3 text-left font-semibold">Priority</th>
-                    <th className="px-6 py-3 text-left font-semibold">Due Date</th>
-                    <th className="px-6 py-3 text-left font-semibold">Assignees</th>
-                    <th className="px-6 py-3 text-left font-semibold">Status</th>
-                    <th className="px-6 py-3 text-left font-semibold">Updated</th>
-                    <th className="px-6 py-3 text-left font-semibold">Action Code</th>
-                    <th className="px-6 py-3 text-left font-semibold"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {tasks.map((task, idx) => (
-                    <tr
-                      key={task.id}
-                      className={`border-b hover:bg-gray-50 transition ${
-                        idx % 2 === 0 ? "bg-white" : "bg-gray-50"
+            {/* Card Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {tasks.map((task, idx) => (
+                <div
+                  key={task.id}
+                  className="bg-white rounded-xl shadow border border-gray-200 p-6 flex flex-col gap-4 hover:shadow-lg transition"
+                >
+                  {/* Header */}
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-800">
+                        {task.title}
+                      </h3>
+                      <p className="text-sm text-gray-500">{task.id}</p>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={selected.includes(task.id)}
+                      onChange={() => toggleSelect(task.id)}
+                      className="h-4 w-4 text-blue-500 border-gray-300 rounded"
+                    />
+                  </div>
+
+                  {/* Details */}
+                  <div className="space-y-1 text-sm text-gray-600">
+                    <p>
+                      <span className="font-medium">Priority:</span>{" "}
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                          task.priority === "High"
+                            ? "bg-red-100 text-red-700"
+                            : task.priority === "Medium"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-gray-100 text-gray-700"
+                        }`}
+                      >
+                        {task.priority}
+                      </span>
+                    </p>
+                    <p>
+                      <span className="font-medium">Due:</span>{" "}
+                      {task.overdue ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold">
+                          <ExclamationTriangleIcon className="h-4 w-4" />
+                          Overdue ({task.due})
+                        </span>
+                      ) : (
+                        task.due
+                      )}
+                    </p>
+                    <p>
+                      <span className="font-medium">Updated:</span>{" "}
+                      {task.updated}
+                    </p>
+                    <p className="flex flex-wrap gap-2">
+                      <span className="font-medium">Assignees:</span>
+                      {task.assignees.map((name, i) => (
+                        <span
+                          key={i}
+                          className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs"
+                        >
+                          <UserIcon className="h-4 w-4 text-gray-500" />
+                          {name}
+                        </span>
+                      ))}
+                    </p>
+                  </div>
+
+                  {/* Status + Actions */}
+                  <div className="flex justify-between items-center mt-2">
+                    <span
+                      className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${
+                        task.status === "Complete"
+                          ? "bg-green-100 text-green-700"
+                          : viewArchive
+                          ? "bg-gray-200 text-gray-600"
+                                                    : "bg-yellow-100 text-yellow-700"
                       }`}
                     >
-                      <td className="px-6 py-4">
-                        <input
-                          type="checkbox"
-                          checked={selected.includes(task.id)}
-                          onChange={() => toggleSelect(task.id)}
-                          className="h-4 w-4 text-blue-500 border-gray-300 rounded"
-                        />
-                      </td>
-                      <td className="px-6 py-4 font-medium">{task.title}</td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                            task.priority === "High"
-                              ? "bg-red-100 text-red-700"
-                              : task.priority === "Medium"
-                              ? "bg-yellow-100 text-yellow-700"
-                              : "bg-gray-100 text-gray-700"
-                          }`}
-                        >
-                          {task.priority}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        {task.overdue ? (
-                          <span className="inline-flex items-center gap-1 px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold">
-                            <ExclamationTriangleIcon className="h-4 w-4" />
-                            Overdue (Due {task.due})
-                          </span>
-                        ) : (
-                          <span className="text-gray-700 text-sm">{task.due}</span>
-                        )}
-                                            </td>
-                      <td className="px-6 py-4">
-                        <div className="flex flex-wrap gap-2">
-                          {task.assignees.map((name, i) => (
-                            <span
-                              key={i}
-                              className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-xs"
-                            >
-                              <UserIcon className="h-4 w-4 text-gray-500" />
-                              {name}
-                            </span>
-                          ))}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${
-                            task.status === "Complete"
-                              ? "bg-green-100 text-green-700"
-                              : viewArchive
-                              ? "bg-gray-200 text-gray-600"
-                              : "bg-yellow-100 text-yellow-700"
-                          }`}
-                        >
-                          <CheckCircleIcon className="h-4 w-4" />
-                          {task.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">{task.updated}</td>
-                      <td className="px-6 py-4 font-mono text-xs text-gray-600">
-                        {task.id}
-                      </td>
-                      <td className="px-6 py-4 text-right relative">
-                        <button
-                          onClick={() => setOpenMenu(openMenu === idx ? null : idx)}
-                          className="p-2 rounded-full hover:bg-gray-200 transition"
-                        >
-                          <EllipsisVerticalIcon className="h-5 w-5 text-gray-600" />
-                        </button>
+                      <CheckCircleIcon className="h-4 w-4" />
+                      {task.status}
+                    </span>
 
-                        {openMenu === idx && (
-                          <div className="absolute right-0 mt-2 w-40 bg-white border rounded-md shadow-lg z-10">
+                    {/* Dropdown menu trigger */}
+                    <div className="relative">
+                      <button
+                        onClick={() =>
+                          setOpenMenu(openMenu === idx ? null : idx)
+                        }
+                        className="p-2 rounded-full hover:bg-gray-200 transition"
+                      >
+                        <EllipsisVerticalIcon className="h-5 w-5 text-gray-600" />
+                      </button>
+                      {openMenu === idx && (
+                        <div className="absolute right-0 mt-2 w-40 bg-white border rounded-md shadow-lg z-10">
+                          <button className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">
+                            View Details
+                          </button>
+                          {!viewArchive && (
                             <button className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">
-                              View Details
+                              Edit
                             </button>
-                            {!viewArchive && (
-                              <button className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">
-                                Edit
-                              </button>
-                            )}
-                            <button className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">
-                              Delete
+                          )}
+                          <button
+                            onClick={() => {
+                              setSelected(selected.filter((id) => id !== task.id));
+                              alert(`Deleting ${task.id}`);
+                            }}
+                            className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                          >
+                            Delete
+                          </button>
+                          {!viewArchive && (
+                            <button
+                              onClick={() => alert(`Archiving ${task.id}`)}
+                              className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                            >
+                              Archive
                             </button>
-                            {!viewArchive && (
-                              <button
-                                onClick={() => alert(`Archiving ${task.id}`)}
-                                className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
-                              >
-                                Archive
-                              </button>
-                            )}
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
+
+            {/* Select All Checkbox */}
+            {tasks.length > 0 && (
+              <div className="flex items-center gap-2 mt-6">
+                <input
+                  type="checkbox"
+                  checked={selected.length === tasks.length && tasks.length > 0}
+                  onChange={toggleSelectAll}
+                  className="h-4 w-4 text-blue-500 border-gray-300 rounded"
+                />
+                <span className="text-sm text-gray-600">Select All</span>
+              </div>
+            )}
           </section>
         </div>
       </div>

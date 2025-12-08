@@ -10,6 +10,7 @@ import DocumentsPage from "./pages/DocumentPanel";
 import HeadsUpPage from "./pages/HeadsUpPanel";
 import AnalyticsPage from "./pages/AnalyticsPanel";
 import AccountManagement from "./pages/AccountManagement";
+import SettingsPanel from "./pages/SettingsPanel";
 
 export default function App() {
   return (
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="/heads-up" element={<HeadsUpPage />} />
         <Route path="/analytics" element={<AnalyticsPage />} />
         <Route path="/create-account" element={<AccountManagement />} />
+        <Route path="/settings" element={<SettingsPanel />} />
       </Routes>
     </Router>
   );

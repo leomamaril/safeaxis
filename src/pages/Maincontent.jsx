@@ -1,18 +1,15 @@
 // src/layout/MainContent.jsx
 import { useState } from "react";
-import { Line } from "react-chartjs-2";
+import { Line, Bar } from "react-chartjs-2";
 import { useNavigate } from "react-router-dom";
 import AgendaItem from "../component/AgendaItem";
 import Card from "../component/Cards";
 import Sidebar from "../component/Sidebar/Sidebar";
-import Header from "../component/Header"; // adjust path if needed
+import Header from "../component/Header";
 import {
   ClipboardDocumentListIcon,
   CalendarIcon,
   EyeIcon,
-  ChartBarIcon,
-  ArrowTrendingUpIcon,
-  CheckCircleIcon,
   ExclamationTriangleIcon,
   AcademicCapIcon,
   BoltIcon,
@@ -24,6 +21,7 @@ import {
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend,
@@ -34,6 +32,7 @@ ChartJS.register(
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend
@@ -44,27 +43,40 @@ export default function MainContent() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [selectedIncident, setSelectedIncident] = useState(null);
   const navigate = useNavigate();
+
+  // Incident totals
+  const incidentTotals = {
+    housekeeping: 40,
+    construction: 25,
+    laboratory: 15,
+    administration: 10,
+  };
+
+  const monthlyBreakdown = {
+    housekeeping: [3, 4, 2, 5, 6, 4, 3, 2, 3, 4, 2, 2],
+    construction: [2, 3, 1, 2, 3, 4, 2, 1, 2, 2, 1, 2],
+    laboratory: [1, 1, 2, 1, 2, 2, 1, 1, 1, 1, 1, 1],
+    administration: [1, 0, 1, 1, 1, 2, 1, 0, 1, 1, 1, 1],
+  };
+
+  const totalIncidents =
+    incidentTotals.housekeeping +
+    incidentTotals.construction +
+    incidentTotals.laboratory +
+    incidentTotals.administration;
 
   // Chart data
   const chartData = {
     labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
     datasets: [
       {
-        label: "Completed Tasks",
-        data: [5, 8, 6, 10, 12, 15],
-        borderColor: "rgba(20, 184, 166, 1)",
-        backgroundColor: "rgba(20, 184, 166, 0.2)",
+        label: "Incidents Reported",
+        data: [5, 8, 6, 10, 12, 15, 20],
+        borderColor: "#f59e0b",
+        backgroundColor: "rgba(245, 158, 11, 0.2)",
         tension: 0.4,
-        fill: true,
-      },
-      {
-        label: "Pending Tasks",
-        data: [10, 12, 9, 14, 11, 13],
-        borderColor: "rgba(239, 68, 68, 1)",
-        backgroundColor: "rgba(239, 68, 68, 0.2)",
-        tension: 0.4,
-        fill: true,
       },
     ],
   };
@@ -73,7 +85,7 @@ export default function MainContent() {
     responsive: true,
     plugins: {
       legend: { labels: { color: "#374151" } },
-      title: { display: true, text: "Task Progress Over Time", color: "#111827" },
+      title: { display: true, text: "Incidents Trend", color: "#111827" },
     },
     scales: {
       x: { ticks: { color: "#6B7280" } },
@@ -94,46 +106,30 @@ export default function MainContent() {
 
   return (
     <div className="flex h-screen font-sans bg-gray-100">
-      {/* Sidebar */}
       <Sidebar
         collapsed={sidebarCollapsed}
         setCollapsed={setSidebarCollapsed}
         open={sidebarOpen}
       />
 
-      {/* Main container */}
       <div
         className={`flex-1 flex flex-col transition-all duration-300 ${
           !sidebarOpen ? "ml-0" : sidebarCollapsed ? "ml-20" : "ml-64"
         }`}
       >
-        {/* Header */}
         <Header toggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
-        {/* Scrollable main content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-8">
           {/* Overview Section */}
           <section>
             <h3 className="text-2xl font-bold text-gray-800 mb-2">Overview</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <Card title="Inspection" icon={ClipboardDocumentListIcon} onClick={() => navigate("/inspection")}>
-                <p>Go to Inspection Panel</p>
-              </Card>
-              <Card title="Schedule" icon={CalendarIcon} onClick={() => navigate("/schedules")}>
-                <p>Go to Schedule Panel</p>
-              </Card>
-              <Card title="Heads Up" icon={EyeIcon} onClick={() => navigate("/heads-up")}>
-                <p>Go to Heads Up Panel</p>
-              </Card>
-              <Card title="Actions" icon={BoltIcon} onClick={() => navigate("/actions")}>
-                <p>Go to Actions Panel</p>
-              </Card>
-              <Card title="Issues" icon={ExclamationTriangleIcon} onClick={() => navigate("/issues")}>
-                <p>Go to Issues Panel</p>
-              </Card>
-               <Card title="Training" icon={AcademicCapIcon} onClick={() => navigate("/training")}>
-                <p>Go to Analytics Panel</p>
-              </Card>
+              <Card title="Inspection" icon={ClipboardDocumentListIcon} onClick={() => navigate("/inspection")}><p>Go to Inspection Panel</p></Card>
+              <Card title="Schedule" icon={CalendarIcon} onClick={() => navigate("/schedules")}><p>Go to Schedule Panel</p></Card>
+              <Card title="Heads Up" icon={EyeIcon} onClick={() => navigate("/heads-up")}><p>Go to Heads Up Panel</p></Card>
+              <Card title="Actions" icon={BoltIcon} onClick={() => navigate("/actions")}><p>Go to Actions Panel</p></Card>
+              <Card title="Issues" icon={ExclamationTriangleIcon} onClick={() => navigate("/issues")}><p>Go to Issues Panel</p></Card>
+              <Card title="Training" icon={AcademicCapIcon} onClick={() => navigate("/training")}><p>Go to Training Panel</p></Card>
             </div>
           </section>
 
@@ -182,54 +178,108 @@ export default function MainContent() {
             )}
           </section>
 
-          {/* Analytics Section */}
+                   {/* Analytics Section */}
           <section>
             <h3 className="text-2xl font-bold text-gray-900 mb-6">Analytics</h3>
             <div className="bg-white rounded-xl shadow-lg p-6 flex flex-col lg:flex-row gap-8">
+              {/* Line Chart for overall incident trend */}
               <div className="flex-1 h-[300px] sm:h-[400px]">
                 <Line data={chartData} options={chartOptions} />
               </div>
-              <div className="w-full lg:w-1/4 bg-gradient-to-br from-teal-50 to-white border border-teal-100 rounded-xl p-6 flex flex-col">
-                <h4 className="text-lg font-semibold text-teal-700 mb-5">Summary Overview</h4>
+
+              {/* Incident Overview Panel */}
+              <div className="w-full lg:w-1/4 bg-gradient-to-br from-yellow-50 to-white border border-yellow-100 rounded-xl p-6 flex flex-col">
+                <h4 className="text-lg font-semibold text-yellow-700 mb-5">
+                  Incident Overview
+                </h4>
                 <ul className="space-y-4 text-sm">
-                  <li className="flex items-center justify-between">
-                                        <span className="flex items-center gap-2 text-gray-700">
-                      <CheckCircleIcon className="h-5 w-5 text-teal-500" />
-                      Completed Tasks
+                  {Object.keys(incidentTotals).map((key) => (
+                    <li
+                      key={key}
+                      className="flex items-center justify-between cursor-pointer hover:bg-yellow-50 p-2 rounded"
+                      onClick={() => setSelectedIncident(key)}
+                    >
+                      <span className="flex items-center gap-2 text-gray-700 capitalize">
+                        {key}
+                      </span>
+                      <span className="font-semibold text-yellow-700 bg-yellow-100 px-3 py-1 rounded-full">
+                        {incidentTotals[key]}
+                      </span>
+                    </li>
+                  ))}
+                  <li className="flex items-center justify-between border-t pt-3">
+                    <span className="flex items-center gap-2 text-gray-700 font-medium">
+                      Total Incidents
                     </span>
-                    <span className="font-semibold text-teal-700 bg-teal-100 px-3 py-1 rounded-full">
-                      56
-                    </span>
-                  </li>
-                  <li className="flex items-center justify-between">
-                    <span className="flex items-center gap-2 text-gray-700">
-                      <ExclamationTriangleIcon className="h-5 w-5 text-red-500" />
-                      Pending Tasks
-                    </span>
-                    <span className="font-semibold text-red-700 bg-red-100 px-3 py-1 rounded-full">
-                      69
-                    </span>
-                  </li>
-                  <li className="flex items-center justify-between">
-                    <span className="flex items-center gap-2 text-gray-700">
-                      <ChartBarIcon className="h-5 w-5 text-gray-500" />
-                      Highest Month
-                    </span>
-                    <span className="font-semibold text-gray-800 bg-gray-100 px-3 py-1 rounded-full">
-                      June
-                    </span>
-                  </li>
-                  <li className="flex items-center justify-between">
-                    <span className="flex items-center gap-2 text-gray-700">
-                      <ArrowTrendingUpIcon className="h-5 w-5 text-teal-600" />
-                      Trend
-                    </span>
-                    <span className="font-semibold text-teal-700 bg-teal-100 px-3 py-1 rounded-full">
-                      Upward 📈
+                    <span className="font-semibold text-orange-700 bg-orange-100 px-3 py-1 rounded-full">
+                      {totalIncidents}
                     </span>
                   </li>
                 </ul>
               </div>
+            </div>
+
+            {/* Incident Breakdown Modal */}
+            {selectedIncident && (
+              <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+                <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm relative">
+                  <button
+                    onClick={() => setSelectedIncident(null)}
+                    className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-sm"
+                  >
+                    ✖
+                  </button>
+                  <h3 className="text-lg font-bold mb-3 capitalize">
+                    {selectedIncident} Incident Breakdown (Jan–Dec)
+                  </h3>
+                  <div className="h-[200px]">
+                    <Bar
+                      data={{
+                        labels: [
+                          "Jan","Feb","Mar","Apr","May","Jun",
+                          "Jul","Aug","Sep","Oct","Nov","Dec",
+                        ],
+                        datasets: [
+                          {
+                            label: `${selectedIncident} Incidents`,
+                            data: monthlyBreakdown[selectedIncident],
+                            backgroundColor: "#f59e0b",
+                          },
+                        ],
+                      }}
+                      options={{
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                          x: { ticks: { color: "#374151", font: { size: 10 } } },
+                          y: { ticks: { color: "#374151", font: { size: 10 } } },
+                        },
+                      }}
+                    />
+                  </div>
+                  <p className="mt-3 text-xs text-gray-600">
+                    Total reported:{" "}
+                    <span className="font-semibold text-gray-800">
+                      {incidentTotals[selectedIncident]}
+                    </span>
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Analytics Insights */}
+            <div className="mt-6 bg-gray-50 border border-gray-200 rounded-lg p-6">
+              <h4 className="text-lg font-semibold text-gray-800 mb-3">
+                Analytics Insights
+              </h4>
+              <p className="text-sm text-gray-700 leading-relaxed">
+                The site recorded a total of <strong>{totalIncidents}</strong> incidents this year. 
+                Housekeeping accounted for the largest share with {incidentTotals.housekeeping} reports, 
+                followed by Construction ({incidentTotals.construction}), Laboratory ({incidentTotals.laboratory}), 
+                and Administration ({incidentTotals.administration}). Monthly breakdowns highlight spikes in 
+                mid-year, helping managers identify workload surges and safety gaps. These insights guide 
+                targeted interventions in high-incident areas to reduce risks and improve overall site safety.
+              </p>
             </div>
           </section>
         </div>
