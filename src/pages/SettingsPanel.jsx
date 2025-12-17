@@ -1,13 +1,16 @@
 // src/layout/SettingsPanel.jsx
+import { supabase } from "../lib/supabase"; // ✅ import supabase client
 import { useState } from "react";
 import Sidebar from "../component/Sidebar/Sidebar";
 import Header from "../component/Header";
+import { useNavigate } from "react-router-dom";
 import {
   Cog6ToothIcon,
   BellIcon,
   MoonIcon,
   GlobeAltIcon,
   UserIcon,
+  ArrowRightOnRectangleIcon
 } from "@heroicons/react/24/outline";
 
 export default function SettingsPanel() {
@@ -46,7 +49,19 @@ export default function SettingsPanel() {
     setShowEditProfile(false);
     // In a real app, you’d also persist changes to backend here
   };
+const navigate = useNavigate();
 
+async function handleLogout() {
+  const { error } = await supabase.auth.signOut();
+  if (error) {
+    console.error("Logout error:", error.message);
+  } else {
+    // clear any local storage if you stored userId
+    localStorage.removeItem("userId");
+    // redirect to login
+    navigate("/");
+  }
+}
   return (
     <div className="flex h-screen font-sans bg-gray-100">
       {/* Sidebar */}
@@ -167,6 +182,23 @@ export default function SettingsPanel() {
                   Edit Profile
                 </button>
               </div>
+              {/* Logout */}
+<div className="bg-gray-50 rounded-lg p-6 shadow-sm flex flex-col gap-4">
+  <div className="flex items-center gap-2">
+    <ArrowRightOnRectangleIcon className="h-6 w-6 text-teal-500" />
+    <h3 className="text-lg font-semibold text-gray-800">Logout</h3>
+  </div>
+  <p className="text-sm text-gray-600">
+    Sign out of your account securely.
+  </p>
+  <button
+    onClick={handleLogout}
+    className="px-4 py-2 bg-red-500 text-white rounded-md shadow hover:bg-red-600 transition text-sm font-medium"
+  >
+    Logout
+  </button>
+</div>
+
             </div>
           </section>
         </div>

@@ -13,13 +13,20 @@ import {
   Cog6ToothIcon,
   ChevronRightIcon,
 } from "@heroicons/react/24/outline";
+import { useEffect, useState } from "react";
+import { supabase } from "../../lib/supabase"; // ✅ import supabase client
 
 export default function Sidebar({ collapsed, setCollapsed, open }) {
   const navigate = useNavigate();
+  const [profile, setProfile] = useState(null);
 
   const navItems = [
     { name: "Home", icon: HomeIcon, path: "/dashboard" },
-    { name: "Inspection", icon: ClipboardDocumentListIcon, path: "/inspection" },
+    {
+      name: "Inspection",
+      icon: ClipboardDocumentListIcon,
+      path: "/inspection",
+    },
     { name: "Schedules", icon: CalendarIcon, path: "/schedules" },
     { name: "Actions", icon: BoltIcon, path: "/actions" },
     { name: "Training", icon: AcademicCapIcon, path: "/training" },
@@ -29,6 +36,28 @@ export default function Sidebar({ collapsed, setCollapsed, open }) {
     { name: "Analytics", icon: ChartBarIcon, path: "/analytics" },
     { name: "Create Account", icon: UserGroupIcon, path: "/create-account" },
   ];
+
+  // Sidebar.jsx
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    if (userId) {
+      fetchProfile(userId);
+    }
+  }, []);
+
+  async function fetchProfile(userId) {
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", userId)
+      .single();
+
+    if (error) {
+      console.error("Error fetching profile:", error.message);
+    } else {
+      setProfile(data); // only the logged-in user
+    }
+  }
 
   if (!open) return null;
 
@@ -68,7 +97,9 @@ export default function Sidebar({ collapsed, setCollapsed, open }) {
             }
           >
             <div
-              className={`flex ${collapsed ? "justify-center" : "items-center"}`}
+              className={`flex ${
+                collapsed ? "justify-center" : "items-center"
+              }`}
             >
               <Icon className={`h-5 w-5 ${collapsed ? "" : "mr-3"}`} />
               {!collapsed && <span>{name}</span>}
@@ -78,33 +109,37 @@ export default function Sidebar({ collapsed, setCollapsed, open }) {
       </div>
 
       {/* Footer with settings/profile */}
-      <div className="border-t border-gray-700 p-4">
-        {!collapsed && (
-          <div className="mb-3 space-y-1 text-sm text-gray-400">
-            <div>SUMEC Philippines</div>
-          </div>
-        )}
-        <button
-          onClick={() => navigate("/settings")} // direct navigation to SettingPanel
-          className="flex items-center w-full text-left focus:outline-none hover:bg-gray-800 p-2 rounded-md transition"
-        >
-          {/* Left icon */}
-          <Cog6ToothIcon className="w-5 h-5 text-teal-400 mr-3" />
+<div className="border-t border-gray-700 p-4">
+  {!collapsed && (
+    <div className="mb-3 space-y-1 text-sm text-gray-400">
+      <div>SUMEC Philippines</div>
+    </div>
+  )}
+  <button
+    onClick={() => navigate("/settings")}
+    className={`flex items-center w-full text-left focus:outline-none hover:bg-gray-800 p-2 rounded-md transition ${
+      collapsed ? "justify-center" : ""
+    }`}
+  >
+    <Cog6ToothIcon className="w-5 h-5 text-teal-400 mr-3" />
 
-          {/* Text */}
-          {!collapsed && (
-            <div>
-              <p className="text-white font-bold leading-tight">Leonardo</p>
-              <p className="text-xs text-gray-400">Medical Technologist</p>
-            </div>
-          )}
-
-          {/* Right chevron */}
-          {!collapsed && (
-            <ChevronRightIcon className="w-5 h-5 text-gray-400 ml-auto" />
-          )}
-        </button>
+    {/* Show profile details only when expanded */}
+    {!collapsed && profile && (
+      <div>
+        <p className="text-white font-bold">
+          {profile.fname} {profile.lname}
+        </p>
+        <p className="text-xs text-gray-400">{profile.position}</p>
+        <p className="text-xs text-gray-400">{profile.department}</p>
       </div>
+    )}
+
+    {!collapsed && (
+      <ChevronRightIcon className="w-5 h-5 text-gray-400 ml-auto" />
+    )}
+  </button>
+</div>
+
     </div>
   );
 }

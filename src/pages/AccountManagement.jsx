@@ -1,54 +1,64 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 import Sidebar from "../component/Sidebar/Sidebar";
 import Header from "../component/Header";
+import { supabase } from "../lib/supabase"; // ✅ Supabase client
 
 export default function AccountManagement() {
-  const [accounts, setAccounts] = useState([
-    {
-      fullName: "Maria Santos",
-      email: "maria.manager@example.com",
-      phone: "09123450001",
-      workId: "EMP100",
-      position: "Manager",
-      department: "Operations",
-    },
-    {
-      fullName: "Juan Dela Cruz",
-      email: "juan.subcontractor@example.com",
-      phone: "09123450002",
-      workId: "EMP200",
-      position: "Sub Contractor",
-      department: "Construction",
-    },
-    {
-      fullName: "Leonardo Cruz",
-      email: "leonardo.medical@example.com",
-      phone: "09123450003",
-      workId: "EMP300",
-      position: "Medical Technologist",
-      department: "Laboratory",
-    },
-    {
-      fullName: "Ana Reyes",
-      email: "ana.admin@example.com",
-      phone: "09123450004",
-      workId: "EMP400",
-      position: "Admin Staff",
-      department: "Administration",
-    },
-  ]);
-
+  const [accounts, setAccounts] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [selectedRows, setSelectedRows] = useState({});
-
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
-  const handleAddAccount = (newAccount) => {
-    setAccounts([...accounts, newAccount]);
-    setShowPopup(false);
+  // 🔎 READ: fetch accounts from Supabase
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      const { data, error } = await supabase.from("users").select("*");
+      if (error) {
+        console.error("Error fetching accounts:", error);
+      } else {
+        setAccounts(data);
+      }
+    };
+    fetchAccounts();
+  }, []);
+
+  // ➕ CREATE
+  const handleAddAccount = async (newAccount) => {
+    const { data, error } = await supabase.from("users").insert([newAccount]);
+    if (error) {
+      console.error("Insert error:", error);
+    } else {
+      setAccounts([...accounts, ...data]);
+      setShowPopup(false);
+    }
+  };
+
+  // ✏️ UPDATE
+  const handleUpdateAccount = async (id, updates) => {
+    const { data, error } = await supabase
+      .from("users")
+      .update(updates)
+      .eq("id", id);
+    if (error) {
+      console.error("Update error:", error);
+    } else {
+      setAccounts(accounts.map((acc) => (acc.id === id ? { ...acc, ...updates } : acc)));
+      setSelectedAccount(null);
+    }
+  };
+
+  // 🗑 DELETE
+  const handleDeleteAccount = async (id) => {
+    const { error } = await supabase.from("users").delete().eq("id", id);
+    if (error) {
+      console.error("Delete error:", error);
+    } else {
+      setAccounts(accounts.filter((acc) => acc.id !== id));
+      setSelectedAccount(null);
+    }
   };
 
   // Group accounts by department
@@ -116,7 +126,6 @@ export default function AccountManagement() {
             {/* Department Dividers */}
             {Object.keys(groupedAccounts).map((dept) => (
               <div key={dept} className="mb-10">
-                {/* Divider with Select All aligned right */}
                 <div className="flex justify-between items-center border-b border-gray-300 pb-2 mb-4">
                   <h3 className="text-lg font-semibold text-gray-700">{dept}</h3>
                   <label className="flex items-center gap-2 text-sm text-gray-600">
@@ -133,20 +142,19 @@ export default function AccountManagement() {
                   </label>
                 </div>
 
-                {/* Card Layout for this department */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {groupedAccounts[dept].map((acc, idx) => (
                     <div
-                      key={idx}
+                      key={acc.id || idx}
                       className="bg-white rounded-xl shadow border border-gray-200 p-6 flex flex-col gap-4 hover:shadow-lg transition cursor-pointer"
                       onClick={() => setSelectedAccount(acc)}
                     >
                       <div className="flex justify-between items-start">
                         <div>
                           <h3 className="text-lg font-semibold text-gray-800">
-                            {acc.fullName}
+                            {acc.fname} {acc.lname}
                           </h3>
-                          <p className="text-sm text-gray-500">{acc.workId}</p>
+                          <p className="text-sm text-gray-500">{acc.work_id_number}</p>
                         </div>
                         <input
                           type="checkbox"
@@ -158,20 +166,29 @@ export default function AccountManagement() {
                       </div>
 
                       <div className="space-y-1 text-sm text-gray-600">
-                        <p><span className="font-medium">Email:</span> {acc.email}</p>
-                        <p><span className="font-medium">Phone:</span> {acc.phone}</p>
+                        <p><span className="font-medium">Email:</span> {acc.username}</p>
+                        <p><span className="font-medium">Phone:</span> {acc.contact_number}</p>
                         <p><span className="font-medium">Position:</span> {acc.position}</p>
                       </div>
 
-                      <div className="flex justify-end">
+                      <div className="flex justify-end space-x-2">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            alert(`Options for ${acc.fullName}`);
+                            handleUpdateAccount(acc.id, { position: "Updated Position" });
                           }}
-                          className="p-2 rounded hover:bg-gray-200"
+                          className="p-2 rounded bg-yellow-500 text-white hover:bg-yellow-600"
                         >
-                          <EllipsisVerticalIcon className="h-5 w-5 text-gray-600" />
+                          Edit
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteAccount(acc.id);
+                          }}
+                          className="p-2 rounded bg-red-500 text-white hover:bg-red-600"
+                        >
+                          Delete
                         </button>
                       </div>
                     </div>
@@ -180,7 +197,7 @@ export default function AccountManagement() {
               </div>
             ))}
 
-            {/* Popup Modals remain unchanged */}
+            {/* Popup Modal for Create Account */}
             {showPopup && (
               <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
                 <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl relative">
@@ -207,12 +224,38 @@ export default function AccountManagement() {
                     ✖
                   </button>
                   <h3 className="text-xl font-bold mb-4">Account Information</h3>
-                  <p><strong>Full Name:</strong> {selectedAccount.fullName}</p>
-                  <p><strong>Email:</strong> {selectedAccount.email}</p>
-                  <p><strong>Phone:</strong> {selectedAccount.phone}</p>
-                  <p><strong>Work ID:</strong> {selectedAccount.workId}</p>
+                  <p><strong>Full Name:</strong> {selectedAccount.fname} {selectedAccount.lname}</p>
+                  <p><strong>Email:</strong> {selectedAccount.username}</p>
+                  <p><strong>Phone:</strong> {selectedAccount.contact_number}</p>
+                                    <p><strong>Work ID:</strong> {selectedAccount.work_id_number}</p>
                   <p><strong>Position:</strong> {selectedAccount.position}</p>
                   <p><strong>Department:</strong> {selectedAccount.department}</p>
+                  <p><strong>Age:</strong> {selectedAccount.age}</p>
+                  <p><strong>Address:</strong> {selectedAccount.address}</p>
+                  <p><strong>Contact Number:</strong> {selectedAccount.contact_number}</p>
+                  <p><strong>Emergency Name:</strong> {selectedAccount.e_name}</p>
+                  <p><strong>Emergency Relation:</strong> {selectedAccount.e_relation}</p>
+                  <p><strong>Emergency Contact:</strong> {selectedAccount.e_contact}</p>
+                  <p><strong>Emergency Address:</strong> {selectedAccount.e_address}</p>
+
+                  <div className="flex justify-end space-x-2 mt-4">
+                    <button
+                      onClick={() =>
+                        handleUpdateAccount(selectedAccount.id, {
+                          position: "Updated Position",
+                        })
+                      }
+                      className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
+                    >
+                      Update
+                    </button>
+                    <button
+                      onClick={() => handleDeleteAccount(selectedAccount.id)}
+                      className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
@@ -220,5 +263,71 @@ export default function AccountManagement() {
         </div>
       </div>
     </div>
+  );
+}
+
+// ✅ CreateAccountPanel for adding new users
+function CreateAccountPanel({ onSubmit }) {
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+    work_id_number: "",
+    position: "",
+    department: "",
+    fname: "",
+    lname: "",
+    mname: "",
+    suffix: "",
+    age: "",
+    address: "",
+    contact_number: "",
+    e_name: "",
+    e_relation: "",
+    e_contact: "",
+    e_address: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+  <h3 className="text-2xl font-bold mb-6 text-gray-800">Create New Account</h3>
+
+  {/* Grid with 3 columns */}
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    {Object.keys(formData).map((field) => (
+      <div key={field} className="flex flex-col">
+        <label className="block text-sm font-medium text-gray-700 capitalize mb-1">
+          {field.replace("_", " ")}
+        </label>
+        <input
+          type="text"
+          name={field}
+          value={formData[field]}
+          onChange={handleChange}
+          className="border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          required={["username", "password", "fname", "lname"].includes(field)}
+        />
+      </div>
+    ))}
+  </div>
+
+  <div className="flex justify-end mt-6">
+    <button
+      type="submit"
+      className="bg-blue-600 text-white font-semibold py-2 px-6 rounded-md shadow hover:bg-blue-700 transition"
+    >
+      Save Account
+    </button>
+  </div>
+</form>
+
   );
 }

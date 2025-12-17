@@ -11,26 +11,104 @@ import HeadsUpPage from "./pages/HeadsUpPanel";
 import AnalyticsPage from "./pages/AnalyticsPanel";
 import AccountManagement from "./pages/AccountManagement";
 import SettingsPanel from "./pages/SettingsPanel";
+import ProtectedLayout from "./layout/ProtectedLayout";
 
 export default function App() {
   return (
     <Router>
       <Routes>
-        {/* Default route → Login first */}
+        {/* Public route → Login */}
         <Route index element={<LoginPage />} />
 
-        {/* Dashboard and panels */}
-        <Route path="/dashboard" element={<Maincontent />} />
-        <Route path="/inspection" element={<InspectionPage />} />
-        <Route path="/schedules" element={<SchedulesPage />} />
-        <Route path="/actions" element={<ActionsPage />} />
-        <Route path="/training" element={<TrainingPage />} />
-        <Route path="/issues" element={<IssuesPage />} />
-        <Route path="/documents" element={<DocumentsPage />} />
-        <Route path="/heads-up" element={<HeadsUpPage />} />
-        <Route path="/analytics" element={<AnalyticsPage />} />
-        <Route path="/create-account" element={<AccountManagement />} />
-        <Route path="/settings" element={<SettingsPanel />} />
+        {/* Protected routes */}
+        <Route
+          path="/dashboard"
+          element={
+         
+              <Maincontent />
+      
+          }
+        />
+        <Route
+          path="/inspection"
+          element={
+        
+              <InspectionPage />
+            
+          }
+        />
+        <Route
+          path="/schedules"
+          element={
+           
+              <SchedulesPage />
+          
+          }
+        />
+        <Route
+          path="/actions"
+          element={
+       
+              <ActionsPage />
+         
+          }
+        />
+        <Route
+          path="/training"
+          element={
+      
+              <TrainingPage />
+           
+          }
+        />
+        <Route
+          path="/issues"
+          element={
+          
+              <IssuesPage />
+          
+          }
+        />
+        <Route
+          path="/documents"
+          element={
+          
+              <DocumentsPage />
+           
+          }
+        />
+        <Route
+          path="/heads-up"
+          element={
+            
+              <HeadsUpPage />
+           
+          }
+        />
+        <Route
+          path="/analytics"
+          element={
+          
+              <AnalyticsPage />
+     
+          }
+        />
+        <Route
+          path="/create-account"
+          element={
+          
+              <AccountManagement />
+          
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+         
+              <SettingsPanel />
+        
+          }
+        />
       </Routes>
     </Router>
   );
