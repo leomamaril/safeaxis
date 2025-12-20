@@ -20,7 +20,7 @@ import {
   ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
-
+import sumecicon from "../assets/sumec-icon.png";
 export default function Header({ toggleSidebar }) {
   const [open, setOpen] = useState(false); // Notifications
   const [openSearch, setOpenSearch] = useState(false);
@@ -30,7 +30,6 @@ export default function Header({ toggleSidebar }) {
   const [openHeadsUp, setOpenHeadsUp] = useState(false);
   const [openIssue, setOpenIssue] = useState(false);
   const [openTraining, setOpenTraining] = useState(false);
-
 
   const navigate = useNavigate();
 
@@ -77,9 +76,14 @@ export default function Header({ toggleSidebar }) {
 
   return (
     <div className="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
-      <h1 className="text-xl font-semibold text-gray-800">
-        SUMEC Philippines - Safe Axis
-      </h1>
+      <h1 className="flex items-center text-xl font-semibold text-gray-800">
+  <img
+    src={sumecicon}   
+    alt="Sumec Icon"
+    className="h-10 w-10 mr-2"
+  />
+  SUMEC Philippines - Safe Axis
+</h1>
 
       <div className="flex items-center gap-3">
         {/* Search button */}
@@ -208,15 +212,15 @@ export default function Header({ toggleSidebar }) {
                 </li>
 
                 <li
-  className="flex items-center gap-2 px-4 py-2 hover:bg-teal-50 cursor-pointer text-gray-700"
-  onClick={() => {
-    setOpenCreate(false);
-    setOpenTraining(true); // open Training modal
-  }}
->
-  <AcademicCapIcon className="h-5 w-5 text-teal-600" />
-  Create Training
-</li>
+                  className="flex items-center gap-2 px-4 py-2 hover:bg-teal-50 cursor-pointer text-gray-700"
+                  onClick={() => {
+                    setOpenCreate(false);
+                    setOpenTraining(true); // open Training modal
+                  }}
+                >
+                  <AcademicCapIcon className="h-5 w-5 text-teal-600" />
+                  Create Training
+                </li>
 
                 <li
                   className="flex items-center gap-2 px-4 py-2 hover:bg-teal-50 cursor-pointer text-gray-700"
@@ -823,134 +827,152 @@ export default function Header({ toggleSidebar }) {
         )}
 
         {openTraining && (
-  <div
-    className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
-    onClick={() => setOpenTraining(false)}
-  >
-    <div
-      className="bg-white rounded-2xl shadow-2xl w-[1200px] max-h-[80vh] overflow-y-auto p-6"
-      onClick={(e) => e.stopPropagation()}
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-          <AcademicCapIcon className="h-6 w-6 text-teal-600" />
-          Create Training
-        </h2>
-        <button
-          onClick={() => setOpenTraining(false)}
-          className="text-gray-400 hover:text-gray-600 transition"
-        >
-          ✕
-        </button>
-      </div>
+          <div
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+            onClick={() => setOpenTraining(false)}
+          >
+            <div
+              className="bg-white rounded-2xl shadow-2xl w-[1200px] max-h-[80vh] overflow-y-auto p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                  <AcademicCapIcon className="h-6 w-6 text-teal-600" />
+                  Create Training
+                </h2>
+                <button
+                  onClick={() => setOpenTraining(false)}
+                  className="text-gray-400 hover:text-gray-600 transition"
+                >
+                  ✕
+                </button>
+              </div>
 
-      {/* Form + Preview */}
-      <div className="grid grid-cols-2 gap-8">
-        {/* Left Side: Form */}
-        <form className="space-y-6">
-          {/* File Upload */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Upload Training Materials</label>
-            <input
-              type="file"
-              multiple
-              className="w-full border-2 border-dashed border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-600 focus:ring-2 focus:ring-teal-500 focus:outline-none"
-            />
-            <p className="text-xs text-gray-500">You can upload PDFs, PPTs, or images.</p>
-          </div>
+              {/* Form + Preview */}
+              <div className="grid grid-cols-2 gap-8">
+                {/* Left Side: Form */}
+                <form className="space-y-6">
+                  {/* File Upload */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">
+                      Upload Training Materials
+                    </label>
+                    <input
+                      type="file"
+                      multiple
+                      className="w-full border-2 border-dashed border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-600 focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                    />
+                    <p className="text-xs text-gray-500">
+                      You can upload PDFs, PPTs, or images.
+                    </p>
+                  </div>
 
-          {/* Training Title */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Title</label>
-            <input
-              type="text"
-              placeholder="Enter training title..."
-              className="w-full rounded-lg px-3 py-2 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-teal-500 focus:outline-none"
-            />
-          </div>
+                  {/* Training Title */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">
+                      Title
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Enter training title..."
+                      className="w-full rounded-lg px-3 py-2 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                    />
+                  </div>
 
-          {/* Description */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Description</label>
-            <textarea
-              placeholder="Enter training description..."
-              rows={3}
-              className="w-full rounded-lg px-3 py-2 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-teal-500 focus:outline-none"
-            />
-          </div>
+                  {/* Description */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">
+                      Description
+                    </label>
+                    <textarea
+                      placeholder="Enter training description..."
+                      rows={3}
+                      className="w-full rounded-lg px-3 py-2 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                    />
+                  </div>
 
-          {/* Date & Time */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Schedule</label>
-            <input
-              type="datetime-local"
-              className="w-full rounded-lg px-3 py-2 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-teal-500 focus:outline-none"
-            />
-          </div>
+                  {/* Date & Time */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">
+                      Schedule
+                    </label>
+                    <input
+                      type="datetime-local"
+                      className="w-full rounded-lg px-3 py-2 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                    />
+                  </div>
 
-          {/* Trainer */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Trainer</label>
-            <select className="w-full rounded-lg px-3 py-2 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-teal-500 focus:outline-none">
-              <option>John Doe</option>
-              <option>Jane Smith</option>
-              <option>Team A</option>
-            </select>
-          </div>
-        </form>
+                  {/* Trainer */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">
+                      Trainer
+                    </label>
+                    <select className="w-full rounded-lg px-3 py-2 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                      <option>John Doe</option>
+                      <option>Jane Smith</option>
+                      <option>Team A</option>
+                    </select>
+                  </div>
+                </form>
 
-        {/* Right Side: Preview */}
-        <div className="bg-gray-50 rounded-lg p-6 flex flex-col justify-between">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Preview</h3>
-          <div className="bg-white rounded-lg shadow p-4 space-y-3">
-            {/* Header */}
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 bg-gray-300 rounded-full"></div>
-              <div>
-                <p className="font-semibold text-gray-800">Trainer Name</p>
-                <p className="text-xs text-gray-500">Scheduled Date</p>
+                {/* Right Side: Preview */}
+                <div className="bg-gray-50 rounded-lg p-6 flex flex-col justify-between">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                    Preview
+                  </h3>
+                  <div className="bg-white rounded-lg shadow p-4 space-y-3">
+                    {/* Header */}
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 bg-gray-300 rounded-full"></div>
+                      <div>
+                        <p className="font-semibold text-gray-800">
+                          Trainer Name
+                        </p>
+                        <p className="text-xs text-gray-500">Scheduled Date</p>
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <h4 className="text-lg font-bold text-gray-800">
+                      Training Title Preview
+                    </h4>
+                    <p className="text-gray-600">
+                      Description preview will appear here...
+                    </p>
+                    <div className="h-40 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500">
+                      Uploaded Files Preview
+                    </div>
+
+                    {/* Footer actions */}
+                    <div className="flex justify-between text-gray-500 text-sm pt-2 border-t">
+                      <span>📂 Materials</span>
+                      <span>📅 Schedule</span>
+                      <span>↗ Share</span>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex justify-end gap-4 pt-6">
+                    <button
+                      type="button"
+                      onClick={() => setOpenTraining(false)}
+                      className="px-5 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-5 py-2 rounded-lg bg-teal-600 text-white font-semibold hover:bg-teal-700 transition"
+                    >
+                      Create Training
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
-
-            {/* Content */}
-            <h4 className="text-lg font-bold text-gray-800">Training Title Preview</h4>
-            <p className="text-gray-600">Description preview will appear here...</p>
-            <div className="h-40 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500">
-              Uploaded Files Preview
-            </div>
-
-            {/* Footer actions */}
-            <div className="flex justify-between text-gray-500 text-sm pt-2 border-t">
-              <span>📂 Materials</span>
-              <span>📅 Schedule</span>
-              <span>↗ Share</span>
-            </div>
           </div>
-
-          {/* Action Buttons */}
-          <div className="flex justify-end gap-4 pt-6">
-            <button
-              type="button"
-              onClick={() => setOpenTraining(false)}
-              className="px-5 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-5 py-2 rounded-lg bg-teal-600 text-white font-semibold hover:bg-teal-700 transition"
-            >
-              Create Training
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-)}
-
-
+        )}
 
         {/* Notifications Dropdown */}
         <div className="relative" ref={notifRef}>
@@ -984,7 +1006,8 @@ export default function Header({ toggleSidebar }) {
                       Nov 26, 2025 • 09:30 AM
                     </p>
                     <p className="text-sm text-gray-600 truncate max-w-xs">
-                      The inverter at Site A is not converting properly sdfsdfsdfsghrthrt
+                      The inverter at Site A is not converting properly
+                      sdfsdfsdfsghrthrt
                     </p>
                   </div>
                 </li>
@@ -1000,10 +1023,11 @@ export default function Header({ toggleSidebar }) {
                       INV-001 • Solar Inverter Malfunction
                     </p>
                     <p className="text-xs text-gray-500">
-                      Nov 26, 2025 • 09:30 AM 
+                      Nov 26, 2025 • 09:30 AM
                     </p>
                     <p className="text-sm text-gray-600 max-w-xs truncate">
-                      The inverter at Site A is not converting properly asd asd asd ad adas d
+                      The inverter at Site A is not converting properly asd asd
+                      asd ad adas d
                     </p>
                   </div>
                 </li>

@@ -71,7 +71,7 @@ const LoginPage = () => {
             <div>
               <label className="block text-sm font-medium text-gray-200">Email</label>
               <input
-                type="email"
+                type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-teal-400 focus:outline-none text-black"
